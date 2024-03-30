@@ -24807,11 +24807,11 @@ const run = async () => {
             const res = await response.json();
             if (res?.id && customFields.length) {
                 for (const customField of customFields) {
-                    if (customField.id && customField.value) {
+                    if (customField.id) {
                         await fetch(`${CLICKUP_API}/task/${res.id}/field/${customField?.id}`, {
                             method: 'POST',
                             headers: headers,
-                            body: JSON.stringify({ value: customField.value })
+                            body: JSON.stringify(customField.value ? { value: customField.value } : customField)
                         });
                     }
                 }
