@@ -24811,7 +24811,9 @@ const run = async () => {
                         await fetch(`${CLICKUP_API}/task/${res.id}/field/${customField?.id}`, {
                             method: 'POST',
                             headers: headers,
-                            body: JSON.stringify(customField.value ? { value: customField.value } : customField)
+                            body: JSON.stringify(customField.value && typeof customField.value !== 'string'
+                                ? { value: customField.value }
+                                : customField)
                         });
                     }
                 }

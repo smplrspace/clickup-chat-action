@@ -86,7 +86,9 @@ export const run = async (): Promise<void> => {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(
-                  customField.value ? { value: customField.value } : customField
+                  customField.value && typeof customField.value !== 'string'
+                    ? { value: customField.value }
+                    : customField
                 )
               }
             )
