@@ -12,16 +12,16 @@ env:
     required: true
 
 inputs:
-  WORKSPACE_ID:
+  workspace-id:
     description: 'ClickUp workspace ID'
     required: true
-  CHANNEL_ID:
+  channel-id:
     description: 'ClickUp chat channel ID'
     required: true
-  MESSAGE:
+  message:
     description: 'Message to post to the chat channel'
     required: false
-  STATUS_UPDATE:
+  status-update:
     description:
       'Set this to true to include an automated status update of the workflow in
       the message'

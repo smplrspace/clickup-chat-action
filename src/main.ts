@@ -3,11 +3,11 @@ import * as github from '@actions/github'
 import { formatEvent } from './eventFormatter'
 
 const CLICKUP_TOKEN = process.env.CLICKUP_TOKEN
-const WORKSPACE_ID = core.getInput('WORKSPACE_ID')
-const CHANNEL_ID = core.getInput('CHANNEL_ID')
+const workspaceId = core.getInput('workspace-id')
+const channelId = core.getInput('channel-id')
 
-const CLICKUP_BASEURL = `https://api.clickup.com/api/v3/workspaces/${WORKSPACE_ID}`
-const CREATE_MESSAGE_API = `/chat/channels/${CHANNEL_ID}/messages`
+const clickupBaseUrl = `https://api.clickup.com/api/v3/workspaces/${workspaceId}`
+const createMessageApi = `/chat/channels/${channelId}/messages`
 
 interface StatusOption {
   status: string
@@ -41,13 +41,13 @@ export const run = async (): Promise<void> => {
   let contentLines: string[] = []
 
   // start with input message
-  if (core.getInput('MESSAGE')) {
-    contentLines.push(core.getInput('MESSAGE'))
+  if (core.getInput('message')) {
+    contentLines.push(core.getInput('message'))
   }
 
   // build automated status update
   if (
-    core.getInput('STATUS_UPDATE') === 'true' &&
+    core.getInput('status-update') === 'true' &&
     allowedStatuses.includes(core.getInput('status'))
   ) {
     const ctx = github.context
@@ -81,7 +81,7 @@ export const run = async (): Promise<void> => {
     headers.append('Content-Type', 'application/json')
     headers.append('Authorization', CLICKUP_TOKEN)
 
-    const response = await fetch(`${CLICKUP_BASEURL}${CREATE_MESSAGE_API}`, {
+    const response = await fetch(`${clickupBaseUrl}${createMessageApi}`, {
       method: 'POST',
       headers: headers,
       body

@@ -5,13 +5,13 @@ pretty good setup.
 
 ## Inputs
 
-- `WORKSPACE_ID` - **Required**. ClickUp workspace ID.
-- `CHANNEL_ID` - **Required**. ClickUp chat channel ID.
-- `MESSAGE` - Message to post to the chat channel. Supports markdown formatting.
-  This is optional if STATUS_UPDATE is set to true, required in any other case.
-- `STATUS_UPDATE` - Set this to true to include an automated status update of
+- `workspace-id` - **Required**. ClickUp workspace ID.
+- `channel-id` - **Required**. ClickUp chat channel ID.
+- `message` - Message to post to the chat channel. Supports markdown formatting.
+  This is optional if status-update is set to true, required in any other case.
+- `status-update` - Set this to true to include an automated status update of
   the workflow in the message.
-- `status` - Set this when using STATUS_UPDATE. Allowed values: success,
+- `status` - Set this when using status-update. Allowed values: success,
   failure, or cancelled. Can be set using martialonline/workflow-status@v3.
 
 ## Environment variables
@@ -41,9 +41,9 @@ jobs:
       - name: Post a custom message on ClickUp chat
         uses: smplrspace/clickup-chat-action@v1
         with:
-          WORKSPACE_ID: YOUR_WORKSPACE_ID
-          CHANNEL_ID: YOUR_CHAT_CHANNEL_ID
-          MESSAGE: Can read this? The clickup-chat-action seems to work... 🎉
+          workspace-id: 1234567
+          channel-id: xxxxx-12345
+          message: Can read this? The clickup-chat-action seems to work... 🎉
         env:
           CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}
       - name: Get workflow status
@@ -52,11 +52,11 @@ jobs:
       - name: Post a workflow status update on ClickUp chat
         uses: smplrspace/clickup-chat-action@v1
         with:
-          WORKSPACE_ID: YOUR_WORKSPACE_ID
-          CHANNEL_ID: YOUR_CHAT_CHANNEL_ID
-          STATUS_UPDATE: true
+          workspace-id: 1234567
+          channel-id: xxxxx-12345
+          status-update: true
           status: ${{ steps.check.outputs.status }}
-          # MESSAGE: optional in this case
+          # message: optional in this case
         env:
           CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}
 ```

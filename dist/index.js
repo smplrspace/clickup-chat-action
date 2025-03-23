@@ -29927,7 +29927,7 @@ const formatters = {
     release: releaseFormatter
 };
 function formatEvent(event, payload) {
-    console.log(JSON.stringify(payload, null, 2));
+    console.debug(JSON.stringify(payload, null, 2));
     let msg = 'No further information';
     if (event in formatters) {
         try {
@@ -29998,10 +29998,10 @@ const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 const eventFormatter_1 = __nccwpck_require__(7689);
 const CLICKUP_TOKEN = process.env.CLICKUP_TOKEN;
-const WORKSPACE_ID = core.getInput('WORKSPACE_ID');
-const CHANNEL_ID = core.getInput('CHANNEL_ID');
-const CLICKUP_BASEURL = `https://api.clickup.com/api/v3/workspaces/${WORKSPACE_ID}`;
-const CREATE_MESSAGE_API = `/chat/channels/${CHANNEL_ID}/messages`;
+const workspaceId = core.getInput('workspace-id');
+const channelId = core.getInput('channel-id');
+const clickupBaseUrl = `https://api.clickup.com/api/v3/workspaces/${workspaceId}`;
+const createMessageApi = `/chat/channels/${channelId}/messages`;
 const statuses = {
     success: {
         status: 'Success',
@@ -30025,19 +30025,19 @@ const run = async () => {
     }
     let contentLines = [];
     // start with input message
-    if (core.getInput('MESSAGE')) {
-        contentLines.push(core.getInput('MESSAGE'));
+    if (core.getInput('message')) {
+        contentLines.push(core.getInput('message'));
     }
     // build automated status update
-    if (core.getInput('STATUS_UPDATE') === 'true' &&
+    if (core.getInput('status-update') === 'true' &&
         allowedStatuses.includes(core.getInput('status'))) {
         const ctx = github.context;
         const { owner, repo } = ctx.repo;
-        const { eventName, ref, workflow, actor, payload, serverUrl, runId } = ctx;
+        const { eventName, ref, workflow, payload, serverUrl, runId } = ctx;
         const repoURL = `${serverUrl}/${owner}/${repo}`;
         const workflowURL = `${repoURL}/actions/runs/${runId}`;
-        const refName = github.context.ref.split('/').pop();
-        contentLines.concat([
+        const refName = ref.split('/').pop();
+        contentLines = contentLines.concat([
             `${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\``,
             `${(0, eventFormatter_1.formatEvent)(eventName, payload)}`,
             `[Workflow](${workflowURL})`
@@ -30057,7 +30057,7 @@ const run = async () => {
         headers.append('Accept', 'application/json');
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', CLICKUP_TOKEN);
-        const response = await fetch(`${CLICKUP_BASEURL}${CREATE_MESSAGE_API}`, {
+        const response = await fetch(`${clickupBaseUrl}${createMessageApi}`, {
             method: 'POST',
             headers: headers,
             body
