@@ -1,6 +1,4 @@
 // lifted from https://github.com/sarisia/actions-status-discord/blob/main/src/format.ts
-import * as core from '@actions/core'
-
 type Formatter = (payload: any) => string
 
 const formatters: Record<string, Formatter> = {
@@ -10,13 +8,13 @@ const formatters: Record<string, Formatter> = {
 }
 
 export function formatEvent(event: string, payload: Object): string {
-  core.debug(JSON.stringify(payload, null, 2))
+  console.debug(JSON.stringify(payload, null, 2))
   let msg: string = 'No further information'
   if (event in formatters) {
     try {
       return formatters[event](payload) || msg
     } catch (e: any) {
-      core.debug(
+      console.debug(
         `Failed to generate eventDetail for ${event}: ${e}\n${e.stack}`
       )
     }
