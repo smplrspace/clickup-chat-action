@@ -17,7 +17,7 @@ export const run = async (): Promise<void> => {
     const body = JSON.stringify({
       type: 'message',
       content_format: 'text/md',
-      content: MESSAGE,
+      content: MESSAGE
     })
 
     const headers = new Headers()
