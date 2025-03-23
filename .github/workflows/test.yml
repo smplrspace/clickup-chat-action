@@ -15,8 +15,8 @@ jobs:
       - name: Test custom message
         uses: ./
         with:
-          workspace-id: ${{ secrets.workspace-id }}
-          channel-id: ${{ secrets.channel-id }}
+          workspace-id: ${{ secrets.WORKSPACE_ID }}
+          channel-id: ${{ secrets.CHANNEL_ID }}
           message: |
             Can you read this? Then clickup-chat-action seems to work... 🎉
             And another test is coming right after for the automated status update
@@ -25,8 +25,8 @@ jobs:
       - name: Test status update
         uses: ./
         with:
-          workspace-id: ${{ secrets.workspace-id }}
-          channel-id: ${{ secrets.channel-id }}
+          workspace-id: ${{ secrets.WORKSPACE_ID }}
+          channel-id: ${{ secrets.CHANNEL_ID }}
           status-update: true
           status: success
         env:
