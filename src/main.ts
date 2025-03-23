@@ -96,6 +96,6 @@ export const run = async (): Promise<void> => {
     //   core.setFailed(error.message)
     // }
   }
-  console.log('🤖 Done posting');
+  console.log('🤖 Done posting')
   return
 }
