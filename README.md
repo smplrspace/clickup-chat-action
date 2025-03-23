@@ -18,6 +18,9 @@ pretty good setup.
 
 ## Example
 
+> [!WARNING]  
+> Testing callouts
+
 To apply migrations with the Hasura CLI:
 
 ```yaml
