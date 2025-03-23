@@ -15,12 +15,7 @@ jobs:
 
       - uses: ./
         with:
-          CLICKUP_TOKEN: ${{secrets.TOKEN}}
-          LIST_ID: ${{secrets.LIST_ID}}
-          TASK_STATUS: ${{secrets.STATUS}}
-          ASSIGNEES: ${{secrets.ASSIGNEES}}
-          FIELDS: ${{secrets.FIELDS}}
-          MESSAGE: ${{github.event.head_commit.message}}
-          AUTHOR:
-            ${{ github.event.commits[0].author.username ||
-            github.event.commits[0].author.login }}
+          CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}
+          WORKSPACE_ID: ${{ secrets.WORKSPACE_ID }}
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+          MESSAGE: Can read this? The clickup-chat-action seems to work... 🎉

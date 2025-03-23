@@ -1,16 +1,16 @@
 {
-  "name": "clickup-action",
-  "description": "GitHub action wrapping the ClickUp API",
+  "name": "clickup-chat-action",
+  "description": "GitHub action wrapping the ClickUp Chat API",
   "version": "0.0.1",
   "author": "Thibaut Tiberghien <thibaut@smplrspace.com>",
   "private": true,
-  "homepage": "https://github.com/smplrspace/clickup-action",
+  "homepage": "https://github.com/smplrspace/clickup-chat-action",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smplrspace/clickup-action.git"
+    "url": "git+https://github.com/smplrspace/clickup-chat-action.git"
   },
   "bugs": {
-    "url": "https://github.com/smplrspace/clickup-action/issues"
+    "url": "https://github.com/smplrspace/clickup-chat-action/issues"
   },
   "keywords": [
     "actions",
