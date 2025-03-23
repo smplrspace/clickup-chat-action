@@ -38,37 +38,42 @@ export const run = async (): Promise<void> => {
     return
   }
 
+  let contentLines: string[] = []
+
+  // start with input message
+  if (core.getInput('MESSAGE')) {
+    contentLines.push(core.getInput('MESSAGE'))
+  }
+
   // build automated status update
-  const ctx = github.context
-  const { owner, repo } = ctx.repo
-  const { eventName, ref, workflow, actor, payload, serverUrl, runId } = ctx
-  const repoURL = `${serverUrl}/${owner}/${repo}`
-  const workflowURL = `${repoURL}/actions/runs/${runId}`
-  const refName = github.context.ref.split('/').pop()
-  const statusUpdate =
+  if (
     core.getInput('STATUS_UPDATE') === 'true' &&
     allowedStatuses.includes(core.getInput('status'))
-      ? `
-        ${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\`
-        ${formatEvent(eventName, payload)}
-        [Workflow](${workflowURL})
-      `
-      : undefined
+  ) {
+    const ctx = github.context
+    const { owner, repo } = ctx.repo
+    const { eventName, ref, workflow, actor, payload, serverUrl, runId } = ctx
+    const repoURL = `${serverUrl}/${owner}/${repo}`
+    const workflowURL = `${repoURL}/actions/runs/${runId}`
+    const refName = github.context.ref.split('/').pop()
 
-  const message = core.getInput('MESSAGE') ?? undefined
-  const returnCarriage = message && statusUpdate ? '\n' : ''
-  const content = `${message}${returnCarriage}${statusUpdate}`
+    contentLines.concat([
+      `${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\``,
+      `${formatEvent(eventName, payload)}`,
+      `[Workflow](${workflowURL})`
+    ])
+  }
 
   console.log(`
     🤖 Posting message to ClickUp:
-    ${content}
+    ${contentLines.join('\n')}
   `)
 
   try {
     const body = JSON.stringify({
       type: 'message',
       content_format: 'text/md',
-      content
+      content: contentLines.join('\n')
     })
 
     const headers = new Headers()

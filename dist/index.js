@@ -30023,33 +30023,35 @@ const run = async () => {
         console.error('Missing CLICKUP_TOKEN env');
         return;
     }
+    let contentLines = [];
+    // start with input message
+    if (core.getInput('MESSAGE')) {
+        contentLines.push(core.getInput('MESSAGE'));
+    }
     // build automated status update
-    const ctx = github.context;
-    const { owner, repo } = ctx.repo;
-    const { eventName, ref, workflow, actor, payload, serverUrl, runId } = ctx;
-    const repoURL = `${serverUrl}/${owner}/${repo}`;
-    const workflowURL = `${repoURL}/actions/runs/${runId}`;
-    const refName = github.context.ref.split('/').pop();
-    const statusUpdate = core.getInput('STATUS_UPDATE') === 'true' &&
-        allowedStatuses.includes(core.getInput('status'))
-        ? `
-        ${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\`
-        ${(0, eventFormatter_1.formatEvent)(eventName, payload)}
-        [Workflow](${workflowURL})
-      `
-        : undefined;
-    const message = core.getInput('MESSAGE') ?? undefined;
-    const returnCarriage = message && statusUpdate ? '\n' : '';
-    const content = `${message}${returnCarriage}${statusUpdate}`;
+    if (core.getInput('STATUS_UPDATE') === 'true' &&
+        allowedStatuses.includes(core.getInput('status'))) {
+        const ctx = github.context;
+        const { owner, repo } = ctx.repo;
+        const { eventName, ref, workflow, actor, payload, serverUrl, runId } = ctx;
+        const repoURL = `${serverUrl}/${owner}/${repo}`;
+        const workflowURL = `${repoURL}/actions/runs/${runId}`;
+        const refName = github.context.ref.split('/').pop();
+        contentLines.concat([
+            `${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\``,
+            `${(0, eventFormatter_1.formatEvent)(eventName, payload)}`,
+            `[Workflow](${workflowURL})`
+        ]);
+    }
     console.log(`
     🤖 Posting message to ClickUp:
-    ${content}
+    ${contentLines.join('\n')}
   `);
     try {
         const body = JSON.stringify({
             type: 'message',
             content_format: 'text/md',
-            content
+            content: contentLines.join('\n')
         });
         const headers = new Headers();
         headers.append('Accept', 'application/json');
