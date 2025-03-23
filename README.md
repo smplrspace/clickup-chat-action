@@ -7,8 +7,12 @@ pretty good setup.
 
 - `WORKSPACE_ID` - **Required**. ClickUp workspace ID.
 - `CHANNEL_ID` - **Required**. ClickUp chat channel ID.
-- `MESSAGE` - **Required**. Message to post to the chat channel. This supports
-  markdown formatting.
+- `MESSAGE` - Message to post to the chat channel. Supports markdown formatting.
+  This is optional if STATUS_UPDATE is set to true, required in any other case.
+- `STATUS_UPDATE` - Set this to true to include an automated status update of
+  the workflow in the message.
+- `status` - Set this when using STATUS_UPDATE. Allowed values: success,
+  failure, or cancelled. Can be set using martialonline/workflow-status@v3.
 
 ## Environment variables
 
@@ -18,7 +22,7 @@ pretty good setup.
 
 ## Example
 
-To apply migrations with the Hasura CLI:
+To post the message to ClickUp chat via API:
 
 ```yaml
 name: Your workflow
@@ -34,12 +38,25 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
       # - all the steps of your workflow
-      - name: Post about it on ClickUp chat
+      - name: Post a custom message on ClickUp chat
         uses: smplrspace/clickup-chat-action@v1
         with:
           WORKSPACE_ID: YOUR_WORKSPACE_ID
           CHANNEL_ID: YOUR_CHAT_CHANNEL_ID
           MESSAGE: Can read this? The clickup-chat-action seems to work... 🎉
+        env:
+          CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}
+      - name: Get workflow status
+        uses: martialonline/workflow-status@v3
+        id: check
+      - name: Post a workflow status update on ClickUp chat
+        uses: smplrspace/clickup-chat-action@v1
+        with:
+          WORKSPACE_ID: YOUR_WORKSPACE_ID
+          CHANNEL_ID: YOUR_CHAT_CHANNEL_ID
+          STATUS_UPDATE: true
+          status: ${{ steps.check.outputs.status }}
+          # MESSAGE: optional in this case
         env:
           CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}
 ```

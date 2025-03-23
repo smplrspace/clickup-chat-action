@@ -1,22 +1,32 @@
-name: RUN
+name: Test
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Build
         run: npm install && npm run bundle
-
-      - uses: ./
+      - name: Test custom message
+        uses: ./
         with:
           WORKSPACE_ID: ${{ secrets.WORKSPACE_ID }}
           CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
           MESSAGE: Can read this? The clickup-chat-action seems to work... 🎉
+        env:
+          CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}
+      - name: Test status update
+        uses: ./
+        with:
+          WORKSPACE_ID: ${{ secrets.WORKSPACE_ID }}
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+          MESSAGE: Testing the status update mode now
+          STATUS_UPDATE: true
+          status: success
         env:
           CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}

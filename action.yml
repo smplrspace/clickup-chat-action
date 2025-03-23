@@ -20,7 +20,17 @@ inputs:
     required: true
   MESSAGE:
     description: 'Message to post to the chat channel'
-    required: true
+    required: false
+  STATUS_UPDATE:
+    description:
+      'Set this to true to include an automated status update of the workflow in
+      the message'
+    required: false
+  status:
+    description:
+      One of success, failure, or cancelled. Can be set using
+      martialonline/workflow-status@v3.
+    required: false
 
 runs:
   using: node20

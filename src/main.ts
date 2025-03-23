@@ -1,29 +1,74 @@
 import * as core from '@actions/core'
+import * as github from '@actions/github'
+import { formatEvent } from './eventFormatter'
 
 const CLICKUP_TOKEN = process.env.CLICKUP_TOKEN
 const WORKSPACE_ID = core.getInput('WORKSPACE_ID')
 const CHANNEL_ID = core.getInput('CHANNEL_ID')
-const MESSAGE = core.getInput('MESSAGE')
 
 const CLICKUP_BASEURL = `https://api.clickup.com/api/v3/workspaces/${WORKSPACE_ID}`
 const CREATE_MESSAGE_API = `/chat/channels/${CHANNEL_ID}/messages`
 
+interface StatusOption {
+  status: string
+  emoji: string // replace by color banner of ClickUp API lets us in future
+}
+
+const statuses: Record<string, StatusOption> = {
+  success: {
+    status: 'Success',
+    emoji: '🟢'
+  },
+  failure: {
+    status: 'Failure',
+    emoji: '🔴'
+  },
+  cancelled: {
+    status: 'Cancelled',
+    emoji: '🟠'
+  }
+}
+
+const allowedStatuses = Object.keys(statuses)
+
+// main function
 export const run = async (): Promise<void> => {
   if (!CLICKUP_TOKEN) {
-    console.error('Missing CLICKUP_TOKEN env');
+    console.error('Missing CLICKUP_TOKEN env')
     return
   }
 
+  // build automated status update
+  const ctx = github.context
+  const { owner, repo } = ctx.repo
+  const { eventName, ref, workflow, actor, payload, serverUrl, runId } = ctx
+  const repoURL = `${serverUrl}/${owner}/${repo}`
+  const workflowURL = `${repoURL}/actions/runs/${runId}`
+  const refName = github.context.ref.split('/').pop()
+  const statusUpdate =
+    core.getInput('STATUS_UPDATE') === 'true' &&
+    allowedStatuses.includes(core.getInput('status'))
+      ? `
+        ${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\`
+        ${formatEvent(eventName, payload)}
+        [Workflow](${workflowURL})
+      `
+      : undefined
+
+  const message = core.getInput('MESSAGE') ?? undefined
+  const returnCarriage = message && statusUpdate ? '\n' : ''
+  const content = `${message}${returnCarriage}${statusUpdate}`
+
   console.log(`
-    🤖 Posting message to clickup:
-    ${MESSAGE}
+    🤖 Posting message to ClickUp:
+    ${content}
   `)
-  
+
   try {
     const body = JSON.stringify({
       type: 'message',
       content_format: 'text/md',
-      content: MESSAGE
+      content
     })
 
     const headers = new Headers()
