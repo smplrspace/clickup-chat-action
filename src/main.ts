@@ -52,12 +52,12 @@ export const run = async (): Promise<void> => {
   ) {
     const ctx = github.context
     const { owner, repo } = ctx.repo
-    const { eventName, ref, workflow, actor, payload, serverUrl, runId } = ctx
+    const { eventName, ref, workflow, payload, serverUrl, runId } = ctx
     const repoURL = `${serverUrl}/${owner}/${repo}`
     const workflowURL = `${repoURL}/actions/runs/${runId}`
-    const refName = github.context.ref.split('/').pop()
+    const refName = ref.split('/').pop()
 
-    contentLines.concat([
+    contentLines = contentLines.concat([
       `${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\``,
       `${formatEvent(eventName, payload)}`,
       `[Workflow](${workflowURL})`

@@ -8,7 +8,7 @@ const formatters: Record<string, Formatter> = {
 }
 
 export function formatEvent(event: string, payload: Object): string {
-  console.log(JSON.stringify(payload, null, 2))
+  console.debug(JSON.stringify(payload, null, 2))
   let msg: string = 'No further information'
   if (event in formatters) {
     try {
