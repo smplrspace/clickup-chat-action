@@ -6,10 +6,12 @@ branding:
   icon: 'terminal'
   color: 'gray-dark'
 
-inputs:
+env:
   CLICKUP_TOKEN:
     description: 'ClickUp token'
     required: true
+
+inputs:
   WORKSPACE_ID:
     description: 'ClickUp workspace ID'
     required: true

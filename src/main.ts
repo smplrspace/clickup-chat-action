@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 
-const CLICKUP_TOKEN = core.getInput('CLICKUP_TOKEN')
+const CLICKUP_TOKEN = process.env.CLICKUP_TOKEN
 const WORKSPACE_ID = core.getInput('WORKSPACE_ID')
 const CHANNEL_ID = core.getInput('CHANNEL_ID')
 const MESSAGE = core.getInput('MESSAGE')
@@ -9,10 +9,16 @@ const CLICKUP_BASEURL = `https://api.clickup.com/api/v3/workspaces/${WORKSPACE_I
 const CREATE_MESSAGE_API = `/chat/channels/${CHANNEL_ID}/messages`
 
 export const run = async (): Promise<void> => {
+  if (!CLICKUP_TOKEN) {
+    console.error('Missing CLICKUP_TOKEN env');
+    return
+  }
+
   console.log(`
     🤖 Posting message to clickup:
     ${MESSAGE}
   `)
+  
   try {
     const body = JSON.stringify({
       type: 'message',
