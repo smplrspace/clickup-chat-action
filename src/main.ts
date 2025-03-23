@@ -64,10 +64,7 @@ export const run = async (): Promise<void> => {
     ])
   }
 
-  console.log(`
-    🤖 Posting message to ClickUp:
-    ${contentLines.join('\n')}
-  `)
+  console.log(`🤖 Posting message to ClickUp:\n${contentLines.join('\n')}`)
 
   try {
     const body = JSON.stringify({
