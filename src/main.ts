@@ -1,35 +1,16 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { formatEvent } from './eventFormatter'
+import { isValidStatus, statuses } from './status'
+import { asQuote } from './helpers'
 
 const CLICKUP_TOKEN = process.env.CLICKUP_TOKEN
 const workspaceId = core.getInput('workspace-id')
 const channelId = core.getInput('channel-id')
-
+const status = core.getInput('status')
+  
 const clickupBaseUrl = `https://api.clickup.com/api/v3/workspaces/${workspaceId}`
 const createMessageApi = `/chat/channels/${channelId}/messages`
-
-interface StatusOption {
-  status: string
-  emoji: string // replace by color banner of ClickUp API lets us in future
-}
-
-const statuses: Record<string, StatusOption> = {
-  success: {
-    status: 'Success',
-    emoji: '🟢'
-  },
-  failure: {
-    status: 'Failure',
-    emoji: '🔴'
-  },
-  cancelled: {
-    status: 'Cancelled',
-    emoji: '🟠'
-  }
-}
-
-const allowedStatuses = Object.keys(statuses)
 
 // main function
 export const run = async (): Promise<void> => {
@@ -48,7 +29,7 @@ export const run = async (): Promise<void> => {
   // build automated status update
   if (
     core.getInput('status-update') === 'true' &&
-    allowedStatuses.includes(core.getInput('status'))
+    isValidStatus(status)
   ) {
     const ctx = github.context
     const { owner, repo } = ctx.repo
@@ -62,10 +43,14 @@ export const run = async (): Promise<void> => {
       .replace('owner/repo/.github/', '')
 
     contentLines = contentLines.concat([
-      `${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\``,
-      `${formatEvent(eventName, payload)}`,
-      `[Workflow](${workflowURL})`
+      `${statuses[status].emoji} ${statuses[status].status}: ${workflow} \`${refName}\``,
+      `${asQuote(formatEvent(eventName, payload))}`,
+      `*[Workflow logs](${workflowURL})*`
     ])
+  }
+
+  if (!isValidStatus(status)) {
+    console.error(`Invalid status: ${status}`);
   }
 
   console.log(`🤖 Posting message to ClickUp:\n${contentLines.join('\n')}`)
