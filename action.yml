@@ -3,7 +3,7 @@ description: 'GitHub action wrapping the ClickUp Chat API'
 author: 'Smplrspace'
 
 branding:
-  icon: 'terminal'
+  icon: 'hash'
   color: 'gray-dark'
 
 env:
