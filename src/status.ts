@@ -18,4 +18,5 @@ export const statuses: Record<string, StatusOption> = {
   }
 }
 
-export const isValidStatus = (status: string) => Object.keys(statuses).includes(status)
+export const isValidStatus = (status: string) =>
+  Object.keys(statuses).includes(status)

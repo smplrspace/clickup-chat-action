@@ -29954,6 +29954,24 @@ function releaseFormatter(payload) {
 
 /***/ }),
 
+/***/ 1302:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.asQuote = void 0;
+const asQuote = (str) => {
+    return (str
+        .split('\n')
+        .map(line => `> ${line}`)
+        .join('\n') + '\n');
+};
+exports.asQuote = asQuote;
+
+
+/***/ }),
+
 /***/ 1730:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -29997,26 +30015,14 @@ exports.run = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 const eventFormatter_1 = __nccwpck_require__(7689);
+const status_1 = __nccwpck_require__(5565);
+const helpers_1 = __nccwpck_require__(1302);
 const CLICKUP_TOKEN = process.env.CLICKUP_TOKEN;
 const workspaceId = core.getInput('workspace-id');
 const channelId = core.getInput('channel-id');
+const status = core.getInput('status');
 const clickupBaseUrl = `https://api.clickup.com/api/v3/workspaces/${workspaceId}`;
 const createMessageApi = `/chat/channels/${channelId}/messages`;
-const statuses = {
-    success: {
-        status: 'Success',
-        emoji: '🟢'
-    },
-    failure: {
-        status: 'Failure',
-        emoji: '🔴'
-    },
-    cancelled: {
-        status: 'Cancelled',
-        emoji: '🟠'
-    }
-};
-const allowedStatuses = Object.keys(statuses);
 // main function
 const run = async () => {
     if (!CLICKUP_TOKEN) {
@@ -30029,8 +30035,7 @@ const run = async () => {
         contentLines.push(core.getInput('message'));
     }
     // build automated status update
-    if (core.getInput('status-update') === 'true' &&
-        allowedStatuses.includes(core.getInput('status'))) {
+    if (core.getInput('status-update') === 'true' && (0, status_1.isValidStatus)(status)) {
         const ctx = github.context;
         const { owner, repo } = ctx.repo;
         const { eventName, ref, workflow, payload, serverUrl, runId } = ctx;
@@ -30042,10 +30047,13 @@ const run = async () => {
             .replace('refs/pull/', '')
             .replace('owner/repo/.github/', '');
         contentLines = contentLines.concat([
-            `${statuses[core.getInput('status')].emoji} ${statuses[core.getInput('status')].status}: ${workflow} \`${refName}\``,
-            `${(0, eventFormatter_1.formatEvent)(eventName, payload)}`,
-            `[Workflow](${workflowURL})`
+            `${status_1.statuses[status].emoji} ${status_1.statuses[status].status}: ${workflow} \`${refName}\``,
+            `${(0, helpers_1.asQuote)((0, eventFormatter_1.formatEvent)(eventName, payload))}`,
+            `*[Workflow logs](${workflowURL})*`
         ]);
+    }
+    if (!(0, status_1.isValidStatus)(status)) {
+        console.error(`Invalid status: ${status}`);
     }
     console.log(`🤖 Posting message to ClickUp:\n${contentLines.join('\n')}`);
     try {
@@ -30081,6 +30089,33 @@ const run = async () => {
     return;
 };
 exports.run = run;
+
+
+/***/ }),
+
+/***/ 5565:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isValidStatus = exports.statuses = void 0;
+exports.statuses = {
+    success: {
+        status: 'Success',
+        emoji: '🟢'
+    },
+    failure: {
+        status: 'Failure',
+        emoji: '🔴'
+    },
+    cancelled: {
+        status: 'Cancelled',
+        emoji: '🟡'
+    }
+};
+const isValidStatus = (status) => Object.keys(exports.statuses).includes(status);
+exports.isValidStatus = isValidStatus;
 
 
 /***/ }),

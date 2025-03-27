@@ -8,7 +8,7 @@ const CLICKUP_TOKEN = process.env.CLICKUP_TOKEN
 const workspaceId = core.getInput('workspace-id')
 const channelId = core.getInput('channel-id')
 const status = core.getInput('status')
-  
+
 const clickupBaseUrl = `https://api.clickup.com/api/v3/workspaces/${workspaceId}`
 const createMessageApi = `/chat/channels/${channelId}/messages`
 
@@ -27,10 +27,7 @@ export const run = async (): Promise<void> => {
   }
 
   // build automated status update
-  if (
-    core.getInput('status-update') === 'true' &&
-    isValidStatus(status)
-  ) {
+  if (core.getInput('status-update') === 'true' && isValidStatus(status)) {
     const ctx = github.context
     const { owner, repo } = ctx.repo
     const { eventName, ref, workflow, payload, serverUrl, runId } = ctx
@@ -50,7 +47,7 @@ export const run = async (): Promise<void> => {
   }
 
   if (!isValidStatus(status)) {
-    console.error(`Invalid status: ${status}`);
+    console.error(`Invalid status: ${status}`)
   }
 
   console.log(`🤖 Posting message to ClickUp:\n${contentLines.join('\n')}`)
