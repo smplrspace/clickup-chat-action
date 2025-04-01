@@ -29961,12 +29961,10 @@ function releaseFormatter(payload) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.asQuote = void 0;
-const asQuote = (str) => {
-    return (str
-        .split('\n')
-        .map(line => `> ${line}`)
-        .join('\n') + '\n');
-};
+const asQuote = (str) => `\n${str
+    .split('\n')
+    .map(line => `> ${line}`)
+    .join('\n')}\n`;
 exports.asQuote = asQuote;
 
 
